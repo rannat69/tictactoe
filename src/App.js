@@ -100,7 +100,7 @@ const Grid = () => {
 
         {draw && (
           <div className="drawMessage" data-testid="draw">
-            It's a draw!
+            This is a draw!
           </div>
         )}
 
