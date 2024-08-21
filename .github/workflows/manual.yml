@@ -46,8 +46,7 @@ jobs:
       - name: Build the application
         run: npm run build
       - name: Deploy to github pages
-        run: |
-          npm run deploy
-          git config --global user.email "remi_annat@hotmail.com"
-          git config --global user.name "rannat69"
-          git push origin gh-pages # Push to gh-pages branch
+        uses: rannat69/actions-gh-pages@v3
+        with:
+            github_token: ${{ secrets.GITHUB_TOKEN }} # Use the secret
+            publish_dir: ./build
