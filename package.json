@@ -1,5 +1,6 @@
 {
   "name": "tictactoe-v2",
+  "homepage": "https://rannat69.github.io/tictactoe/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -18,7 +19,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -39,6 +42,7 @@
     ]
   },
   "devDependencies": {
-    "cypress": "^13.13.3"
+    "cypress": "^13.13.3",
+    "gh-pages": "^6.1.1"
   }
 }
