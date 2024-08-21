@@ -159,7 +159,7 @@ describe("Grid Component", () => {
     });
 
     const winnerElement = screen.getByTestId(`draw`); // Store the element
-    expect(winnerElement.textContent).toBe("It's a draw!"); // Compare text content
+    expect(winnerElement.textContent).toBe("This is a draw!"); // Compare text content
     // expect(screen.getByText("It's a draw!")).toBeInTheDocument();
   });
 
