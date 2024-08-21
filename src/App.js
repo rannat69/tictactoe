@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styles from "./App.css";
 
 const Grid = () => {
@@ -8,7 +8,7 @@ const Grid = () => {
   const [draw, setDraw] = useState(false);
 
   const handleCellPress = (index) => {
-    if (grid[index] || checkWinner() || draw) {
+    if (grid[index] || winner || draw) {
       return;
     }
 
@@ -20,12 +20,6 @@ const Grid = () => {
   };
 
   useEffect(() => {
-    // Check for winner or draw after each move
-
-    if (checkWinner() === null) {
-      checkDraw();
-    }
-
     // check if grid is empty, if it is,load it from localStorage
     if (grid.every((cell) => cell === null)) {
       const storedGrid = JSON.parse(window.localStorage.getItem("grid"));
@@ -38,7 +32,7 @@ const Grid = () => {
     }
   }, [grid, currentPlayer]);
 
-  const checkWinner = () => {
+  useMemo(() => {
     const winningLines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -59,9 +53,9 @@ const Grid = () => {
     }
 
     return null;
-  };
+  }, [grid]);
 
-  const checkDraw = () => {
+  useMemo(() => {
     // if all cells filled and no winner, draw game
     if (grid.every((cell) => cell !== null) && !winner) {
       setDraw(true);
@@ -70,7 +64,7 @@ const Grid = () => {
       setDraw(false);
       return false;
     }
-  };
+  }, [grid, winner]);
 
   const handleReset = () => {
     // delete grid from local storage
