@@ -154,9 +154,8 @@ describe("Grid Component", () => {
       fireEvent.click(cell6);
     });
 
-    const winnerElement = screen.getByTestId(`draw`); // Store the element
-    expect(winnerElement.textContent).toBe("It's a draw!"); // Compare text content
-    // expect(screen.getByText("It's a draw!")).toBeInTheDocument();
+    const winnerElement = screen.getByTestId(`draw`);
+    expect(winnerElement.textContent).toBe("This is a draw!"); 
   });
 
   test("resets grid to initial state on reset button click", () => {
