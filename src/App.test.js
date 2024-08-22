@@ -1,10 +1,6 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+
+import { act } from "react";
 
 import Grid from "./App";
 
@@ -25,34 +21,65 @@ describe("Grid Component", () => {
     localStorageMock.removeItem.mockClear();
   });
 
-  test("renders initial grid with empty cells", () => {
+  test("start with pve and pvp buttons", () => {
     render(<Grid />);
+
+    expect(screen.getByText(/Player vs. Computer/i)).toBeInTheDocument();
+    expect(screen.getByText(/Player vs. Player/i)).toBeInTheDocument();
+  });
+
+  test("renders initial grid with empty cells after choosing game mode", async () => {
+    render(<Grid />);
+
+    const pvpButton = screen.getByRole("button", {
+      name: /Player vs. Player/i,
+    });
+    await act(() => {
+      fireEvent.click(pvpButton);
+    });
+
     for (let i = 0; i < 9; i++) {
       const cell = screen.getByTestId(`cell-${i}`);
       expect(cell.textContent).toBe("");
     }
   });
 
-  test("handles cell click and updates grid state", () => {
+  test("handles cell click and updates grid state", async () => {
     render(<Grid />);
+
+    const pvpButton = screen.getByRole("button", {
+      name: /Player vs. Player/i,
+    });
+    await act(() => {
+      fireEvent.click(pvpButton);
+    });
+
     const cell = screen.getByTestId(`cell-1`);
 
     fireEvent.click(cell);
     expect(screen.getByTestId(`cell-1`).textContent).toBe("X");
   });
 
-  test("check for player change after each move", async () => {
+  test("check for player change after each move", () => {
     render(<Grid />);
 
-    const cell0 = screen.getByTestId(`cell-0`);
-    const cell1 = screen.getByTestId(`cell-1`);
     const resetButton = screen.getByRole("button", { name: /Reset/i });
 
-    await act(() => {
+    act(() => {
       fireEvent.click(resetButton);
     });
 
-    await act(() => {
+    const pvpButton = screen.getByRole("button", {
+      name: /Player vs. Player/i,
+    });
+
+    act(() => {
+      fireEvent.click(pvpButton);
+    });
+
+    const cell0 = screen.getByTestId(`cell-0`);
+
+    act(() => {
       fireEvent.click(cell0);
     });
 
@@ -61,10 +88,23 @@ describe("Grid Component", () => {
     );
   });
 
-  test("checks for winner after each move", async () => {
+  test("checks for winner after each move", () => {
     render(<Grid />);
 
     const resetButton = screen.getByRole("button", { name: /Reset/i });
+
+    // Simulate a winning move (across the top row)
+    act(() => {
+      fireEvent.click(resetButton);
+    });
+
+    const pvpButton = screen.getByRole("button", {
+      name: /Player vs. Player/i,
+    });
+
+    act(() => {
+      fireEvent.click(pvpButton);
+    });
 
     const cell0 = screen.getByTestId(`cell-0`);
 
@@ -75,32 +115,27 @@ describe("Grid Component", () => {
     const cell4 = screen.getByTestId(`cell-4`);
     const cell5 = screen.getByTestId(`cell-5`);
     const cell6 = screen.getByTestId(`cell-6`);
-    // Simulate a winning move (across the top row)
-    await act(() => {
-      fireEvent.click(resetButton);
-    });
-
-    await act(() => {
+    act(() => {
       fireEvent.click(cell0);
     });
-    await act(() => {
+    act(() => {
       fireEvent.click(cell1);
     });
-    await act(() => {
+    act(() => {
       fireEvent.click(cell2);
     });
-    await act(() => {
+    act(() => {
       fireEvent.click(cell3);
     });
-    await act(() => {
+    act(() => {
       fireEvent.click(cell4);
     });
 
-    await act(() => {
+    act(() => {
       fireEvent.click(cell5);
     });
 
-    await act(() => {
+    act(() => {
       fireEvent.click(cell6);
     });
 
@@ -113,6 +148,19 @@ describe("Grid Component", () => {
     const resetButton = screen.getByRole("button", { name: /Reset/i });
 
     // Simulate a draw (fill all cells with alternating X and O)
+
+    act(() => {
+      fireEvent.click(resetButton);
+    });
+
+    const pvpButton = screen.getByRole("button", {
+      name: /Player vs. Player/i,
+    });
+
+    act(() => {
+      fireEvent.click(pvpButton);
+    });
+
     const cell0 = screen.getByTestId(`cell-0`);
     const cell1 = screen.getByTestId(`cell-1`);
     const cell2 = screen.getByTestId(`cell-2`);
@@ -123,9 +171,6 @@ describe("Grid Component", () => {
     const cell7 = screen.getByTestId(`cell-7`);
     const cell8 = screen.getByTestId(`cell-8`);
 
-    act(() => {
-      fireEvent.click(resetButton);
-    });
     act(() => {
       fireEvent.click(cell4);
     });
@@ -155,43 +200,30 @@ describe("Grid Component", () => {
     });
 
     const winnerElement = screen.getByTestId(`draw`);
-    expect(winnerElement.textContent).toBe("This is a draw!"); 
+    expect(winnerElement.textContent).toBe("This is a draw!");
   });
 
-  test("resets grid to initial state on reset button click", () => {
+  test("resets grid to game selection on reset button click", () => {
     render(<Grid />);
     const resetButton = screen.getByRole("button", { name: /Reset/i });
 
-    const cell0 = screen.getByTestId(`cell-0`);
-
     act(() => {
-      fireEvent.click(cell0);
-
       fireEvent.click(resetButton);
     });
 
-    expect(cell0.textContent).toBe("");
+    expect(screen.getByText(/Player vs. Computer/i)).toBeInTheDocument();
+    expect(screen.getByText(/Player vs. Player/i)).toBeInTheDocument();
   });
 
   test("loads grid from localStorage on component mount if grid is empty", () => {
     render(<Grid />);
 
-    // Simulate a saved grid in localStorage
-    const resetButton = screen.getByRole("button", { name: /Reset/i });
-
-    // Simulate a draw (fill all cells with alternating X and O)
-    const cell0 = screen.getByTestId(`cell-0`);
-    const cell1 = screen.getByTestId(`cell-1`);
-    const cell2 = screen.getByTestId(`cell-2`);
-    const cell3 = screen.getByTestId(`cell-3`);
-    const cell4 = screen.getByTestId(`cell-4`);
-    const cell5 = screen.getByTestId(`cell-5`);
-    const cell6 = screen.getByTestId(`cell-6`);
-    const cell7 = screen.getByTestId(`cell-7`);
-    const cell8 = screen.getByTestId(`cell-8`);
+    const pvpButton = screen.getByRole("button", {
+      name: /Player vs. Player/i,
+    });
 
     act(() => {
-      fireEvent.click(resetButton);
+      fireEvent.click(pvpButton);
     });
 
     render(<Grid />);
@@ -200,6 +232,16 @@ describe("Grid Component", () => {
       localStorageMock.getItem.mockReturnValue(
         JSON.stringify(["X", null, "O", null, "X", null, null, null, "O"])
       );
+
+      const cell0 = screen.getByTestId(`cell-0`);
+      const cell1 = screen.getByTestId(`cell-1`);
+      const cell2 = screen.getByTestId(`cell-2`);
+      const cell3 = screen.getByTestId(`cell-3`);
+      const cell4 = screen.getByTestId(`cell-4`);
+      const cell5 = screen.getByTestId(`cell-5`);
+      const cell6 = screen.getByTestId(`cell-6`);
+      const cell7 = screen.getByTestId(`cell-7`);
+      const cell8 = screen.getByTestId(`cell-8`);
 
       expect(cell0.textContent).toBe("X");
       expect(cell2.textContent).toBe("O");
@@ -210,6 +252,15 @@ describe("Grid Component", () => {
 
   test("saves grid to localStorage after each move", () => {
     render(<Grid />);
+
+    const pvpButton = screen.getByRole("button", {
+      name: /Player vs. Player/i,
+    });
+
+    act(() => {
+      fireEvent.click(pvpButton);
+    });
+
     const cell0 = screen.getByTestId(`cell-0`);
 
     act(() => {
