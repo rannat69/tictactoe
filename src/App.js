@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import styles from "./App.css";
 
 const Grid = () => {
   const [grid, setGrid] = useState(Array(9).fill(null));
